@@ -1,0 +1,31 @@
+% vim: set tw=78 sts=2 sw=2 ts=8 aw et ai:
+
+Considering the disadvantages of existing tools for minimizing container images, I developed a new tool called \textit{dockerminimizer} that aims to address these issues.
+
+\fig[scale=0.40]{img/diagram.pdf}{img:architecture}{High-level architecture of the application}
+
+My tool is implemented in \textit{Go} and is designed to be modular and extensible. It takes as input either a Dockerfile or an existing Docker image and performs static, dynamic analysis and 
+binary search to minimize the application containerized, outputting the Dockerfile and if needed the tarball of all dependency files.
+It takes the following command-line arguments:
+\begin{itemize}
+    \item \textbf{--file}: The path to the Dockerfile to be minimized.
+    \item \textbf{--image}: The name of an images from a Docker registry to be minimized
+    \item \textbf{--max_limit}: How many times should the binary search procedure be run for
+    \item \textbf{--debug}: Enable logging of actions 
+    \item \textbf{--timeout}: How long should the minimal Docker container run before being declared as successful
+    \item \textbf{--strace_path}: The path to a statically-linked strace binary
+    \item \textbf{--binary_search}: Decide whether to continue the minimization process with a binary search if dynamic analysis failed
+\end{itemize}
+
+The tool expands from Slim by firstly performing static analysis to conserve processing resources and has a brute-force binary search approach in order to ensure that
+the minimization process terminates successfully even in cases where dynamic analysis fails.
+
+\subsubsection*{Binary Search}
+
+Since this is a novel approach, I will briefly describe how the binary search procedure works.
+
+The binary search procedure is a fail-safe mechanism that is used when the dynamic analysis fails to yield any results. It works by splitting the original image's filesystem into two halves and 
+checking if the application can run successfully with only one of the halves. If it can, then the other half is split into two again and added to the first half. Once the application successfully runs,
+the files that remained in the second pile are discarded and the new files become the new baseline. This process is repeated until the maximum number of iterations is reached or the image cannot be minimized any further.
+
+\fig[scale=0.40]{img/brute-force.pdf}{img:binary search}{Binary search procedure for minimizing the application}

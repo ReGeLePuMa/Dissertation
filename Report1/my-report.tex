@@ -14,6 +14,19 @@
 \usepackage{booktabs}     % professional tables
 \usepackage{parskip}
 
+\NewDocumentCommand{\fig}{O{} m m m O{0pt}}{
+\begin{figure}[htb]
+	\begin{center}
+		{%
+			\setlength{\fboxrule}{#5} % Local border thickness
+			\setlength{\fboxsep}{4pt}  % Optional: space between image and frame
+			\fbox{\includegraphics[#1]{#2}}%
+		}
+		\caption{#4 \label{#3}}
+	\end{center}
+\end{figure}
+}
+
 % Support for including graphics
 \usepackage{graphicx}
 \DeclareGraphicsExtensions{.pdf,.png,.jpg}
@@ -43,9 +56,9 @@ National University of Science and Technology POLITEHNICA Bucharest\\
 \label{sec:state-of-the-art}
 \input{src/state-of-the-art}
 
-\section{Implementation}
-\label{sec:implementation}
-\input{src/implementation}
+\section{My Work}
+\label{sec:my-work}
+\input{src/my-work}
 
 
 \section{Conclusion and Further Work}
