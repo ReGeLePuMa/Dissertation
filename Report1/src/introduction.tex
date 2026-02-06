@@ -1,3 +1,21 @@
 % vim: set tw=78 sts=2 sw=2 ts=8 aw et ai:
 
-And there was light.
+In the era where cloud-based solutions have become the de-facto standard for enterprise
+infrastructure, with over 94\% of enterprises using cloud services \cite{cloud-adoption}, containers
+have emerged as a pivotal technology, revolutionizing the way applications are developed, deployed and
+managed \cite{container-vs-vm-2026}, but what exactly are containers?
+
+Containers are lightweight, portable, standalone bundles of software that include everything needed to run an application, such as code, runtime, system tools, libraries, and settings \cite{what-are-containers}. 
+They provide a consistent and isolated environment for applications, ensuring that they run reliably across different computing environments.
+
+However, as the AI revolution continues to reshape the technological landscape, the demand for more efficient storage solutions has surged \cite{cloud-storage}.
+Although containers offer, on average, smaller sizes compared to traditional virtual machines, their size can balloon to several gigabytes when packaging complex application with numerous dependencies.
+This is owing to the fact that containers not only include the application code, but also other components that make the developer experience smoother, such as shell, package managers, and various libraries.
+The removal of these non-essential components can lead to a significant reduction in container size, amongst other benefits like
+faster deployment times and reduced attack surfaces \cite{minimal-containers}.
+
+In this report, we will explore the current state of affairs regarding the minimization of container images, examining existing techniques and tools that shrink container sizes, also
+highlighting my own contributions to this field through the development of a novel tool aimed at optimizing container images.
+
+
+
