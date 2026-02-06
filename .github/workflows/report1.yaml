@@ -28,8 +28,8 @@ jobs:
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
 
-          mv Report1/my-report.pdf Report1/'Andrei_Petrea_Report_1.pdf'
+          mv Report1/my-report.pdf Report1/'Master - AC - R1 - Report - PETREA Andrei.pdf'
 
-          git add -f 'Report1/Andrei_Petrea_Report_1.pdf'
+          git add -f 'Report1/Master - AC - R1 - Report - PETREA Andrei.pdf'
           git commit -m "Update Report 1 PDF" || echo "No changes"
           git push origin main
