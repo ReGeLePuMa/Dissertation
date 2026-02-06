@@ -10,11 +10,11 @@ It takes the following command-line arguments:
 \begin{itemize}
     \item \textbf{--file}: The path to the Dockerfile to be minimized.
     \item \textbf{--image}: The name of an images from a Docker registry to be minimized
-    \item \textbf{--max_limit}: How many times should the binary search procedure be run for
+    \item \textbf{--max\_limit}: How many times should the binary search procedure be run for
     \item \textbf{--debug}: Enable logging of actions 
     \item \textbf{--timeout}: How long should the minimal Docker container run before being declared as successful
-    \item \textbf{--strace_path}: The path to a statically-linked strace binary
-    \item \textbf{--binary_search}: Decide whether to continue the minimization process with a binary search if dynamic analysis failed
+    \item \textbf{--strace\_path}: The path to a statically-linked strace binary
+    \item \textbf{--binary\_search}: Decide whether to continue the minimization process with a binary search if dynamic analysis failed
 \end{itemize}
 
 The tool expands from Slim by firstly performing static analysis to conserve processing resources and has a brute-force binary search approach in order to ensure that
