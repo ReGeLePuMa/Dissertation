@@ -1,0 +1,71 @@
+% vim: set tw=78 sts=2 sw=2 ts=8 aw et ai:
+
+There are two main approaches to minimizing container images:
+\begin{itemize}
+    \item \textbf{Use Smaller-sized Libraries:} This approach involves replacing larger libraries with smaller alternatives that provide the same functionality.
+    \item \textbf{Removing Unnecessary Components:} This approach focuses on stripping away non-essential components from the container image.
+\end{itemize}
+
+Let us explore some of the ways these approaches are implemented in practice.
+
+\subsubsection*{Slim Debian}
+Slim Debian is a stripped-down version of the standard Debian image. It removes unnecessary components and libraries, resulting in a smaller image size compared to the full Debian image (29 MB vs 47 MB).
+However, the reduction is negligible compared to the original image, and it still includes a lot of components that may not be necessary for all applications, such as package managers and shells.
+
+
+\subsubsection*{Alpine Linux}
+One of the most popular base images for minimizing container size is \textit{Alpine Linux}.
+Instead of the standard \textit{glibc} library, which is 2.2MB in size, it uses the \textit{musl} library (approximately 650KB).
+As such, any library that depends on \textit{glibc} can be replaced with a version that relies on \textit{musl}, resulting in a significant reduction in size.
+Most popular frameworks and runtime environments, such as Python, Node.js, and Java, have Alpine-compatible versions that utilize \textit{musl}.
+In order to further reduce the size, Alpine Linux employs \textit{BusyBox}, a software suite that provides several Unix utilities in a single executable file.
+The main disadvantage of using Alpine Linux is compatibility. In order to use it, developers must ensure that their applications and dependencies are compatible with musl,
+which may prove impossible for complex applications.
+
+
+\subsubsection*{Minimal Images}
+
+Minimal images, frequently referred to as \textit{distroless} images, are streamlined container environments that exclude non-essential system components 
+such as package managers, shells, and standard operating system distributions, retaining only the application and its runtime dependencies \cite{distroless-images}.
+As they only include the bare essentials required to run the application, they have the most reduction in size compared to the other approaches, however they are
+the most difficult to create and maintain, as they require a deep understanding of the application's dependencies and careful management of updates and security patches.
+
+
+\subsection*{Building Minimal Images}
+
+Building minimal images is intrinsically linked to finding the dependencies of the application and extracting them into a new container image.
+This process can be achieved through various techniques, such as:
+\begin{itemize}
+    \item \textbf{Static Analysis:} analyzing the application's code and configuration files to identify its dependencies
+    \item \textbf{Dynamic Analysis:} executing the application and monitoring its behavior to identify the dependencies it uses at runtime
+    \item \textbf{Brute Force:} iteratively removing components from the container image and testing if the application still functions correctly, until a minimal set of dependencies is identified
+\end{itemize}
+
+These techniques can be done manually, but they are time-consuming and error-prone, especially for complex applications with many dependencies. 
+As such, there is a need for automated tools that can streamline this process and generate minimal container images efficiently and accurately.
+
+Let us examine some of these tools.
+
+\subsubsection*{Bazel}
+
+Bazel is a build automation tool created by Google that supports building and testing software applications \cite{bazel}.
+It includes support for building Docker images through its \textit{rules\_oci} extension and it made the first 
+distroless images. It uses a file called \textit{BUILD} to define the build rules for the application, including the dependencies and the steps required to create the Docker image.
+The main disadvantage of Bazel is that it doesn't automatically identify the dependencies of the application, requiring developers to manually specify them in the \textit{BUILD} file.
+
+\subsubsection*{Dockershrink}
+
+Dockershrink is an AI-powered tool that optimizes Docker images by analyzing the application and generating a Dockerfile or optimizing an existing one \cite{dockershrink}.
+As far as I could determine, it only looks at Dockerfile misconfigurations and does not actually analyze the application to find its dependencies and it currently only supports NodeJS applications.
+
+\subsubsection*{Slim}
+
+Slim, previously known as DockerSlim, is an open-source tool that automatically minimizes Docker images by analyzing the application and its dependencies, as well fixing common security issues \cite{slim}.
+It works by running the application in a container and monitoring its behavior using ptrace, fanotify, etc to identify the dependencies it uses at runtime, then it generates a new Docker image that only includes those dependencies.
+Additionally, it can also execute commands inside the testing container to ensure that all code paths are exercised, further refining the dependency list.
+As Slim takes an already existing image as input, it can be used with any application, regardless of the programming language or framework used.
+However, Slim has some limitations, such as difficulty in handling applications that require complex setup or configuration, and it may not always produce the smallest possible image due to its reliance on dynamic analysis, as well
+as potential issues with incomplete code path coverage.
+This however remains, as far as I could tell, the best tool available for minimizing container images at the moment.
+
+
