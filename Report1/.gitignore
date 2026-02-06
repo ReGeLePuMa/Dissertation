@@ -1,0 +1,11 @@
+/*.pdf
+/*.aux
+/*.bbl
+/*.blg
+/*.log
+*~
+*.swp
+*.backup
+*.synctex.gz
+*.fls
+*.fdb_latexmk
