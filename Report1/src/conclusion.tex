@@ -1,4 +1,36 @@
 % vim: set tw=78 sts=2 sw=2 ts=8 aw et ai:
 
-Novel and revolutionizing approach. Aiming for world domination, as shown in
-\cite{large-scale-p2p-sim}.
+My tool is still a work in progress and there are several features that are missing or need improvement. 
+I have created a comparison table between my tool and Slim in order to highlight the differences and similarities between the two tools.
+
+\begin{table}[htbp]
+    \centering
+    \caption{Comparison between Dockerminimizer and Slim}
+    \label{tab:comparison_dockerslim}
+    \begin{tabular}{|l|p{5.5cm}|p{5.5cm}|}
+        \hline
+        \textbf{Feature} & \textbf{Dockerminimizer} & \textbf{Slim} \\ \hline
+        \textbf{Implementation Language} & Go & Go \\ \hline
+        \textbf{Analysis Technique} & Static Analysis (`ldd`) \newline Dynamic Analysis (`strace`) \newline Binary Search (Brute Force) & Dynamic Analysis (Sensors/Probes) \newline Static Metadata Analysis \\ \hline
+        \textbf{Output Format} & Minimized \texttt{Dockerfile} + \newline Filesystem Tarball & Minified Docker Image (`.slim`) \newline (Opaque Binary) \\ \hline
+        \textbf{Fallback Mechanism} & \textbf{Binary Search} \newline (Automated recovery of missing files) & \textbf{Manual Configuration} \newline (User must manually include paths) \\ \hline
+        \textbf{Base Image} & \texttt{FROM scratch} & Custom Minified Distro \\ \hline
+        \textbf{Transparency} & \textbf{High} (User can inspect/edit the resulting Dockerfile) & \textbf{Low} (Black-box image generation) \\ \hline
+        \textbf{Additional Features} & \textbf{None} & \textbf{Full Suite} \newline (\texttt{xray}, \texttt{lint}, \texttt{debug}, \texttt{merge}, \texttt{registry}, \texttt{vulnerability}) \\ \hline
+    \end{tabular}
+\end{table}
+
+The main advantage of my tool is the transparency of the resulting Dockerfile, which allows users to inspect and modify the minimized image as needed and the
+automated binary search procedure that ensures that the minimization process terminates successfully even in cases where dynamic analysis fails.
+However, in order to ensure the viability of the tool, I need to either implement some of the additional features that Slim offers or improve on 
+the minimization process in order to achieve better results than Slim.
+
+I have also identified several areas for further work, including:
+\begin{itemize}
+    \item \textbf{Dynamic Analysis Improvements}: In addition to \textit{strace} (which uses ptrace), I could explore other dynamic analysis techniques such as eBPF or systemtap to capture more comprehensive runtime information and potentially improve the accuracy of the minimization process.
+    \item \textbf{Binary Search Optimization}: The current brute-force binary search approach can be time-consuming, especially for larger images. I could investigate more efficient search algorithms or heuristics to reduce the number of iterations needed to find the minimal set of files.
+    \item \textbf{Security Analysis Integration}: Integrating security analysis tools to identify and remove vulnerable dependencies could enhance the security posture of the minimized images.
+    \item \textbf{User Interface Enhancements}: Developing a more user-friendly interface, such as a web dashboard or CLI improvements, could make the tool more accessible to a wider range of users.
+    \item \textbf{Support for Additional Container Formats}: Extending support to other container formats (e.g., OCI images) could broaden the applicability of the tool in different container ecosystems.
+    \item \textbf{Application Path Analysis}: Implementing a more sophisticated application path analysis to better understand the dependencies and interactions between files could lead to more effective minimization.
+\end{itemize}
