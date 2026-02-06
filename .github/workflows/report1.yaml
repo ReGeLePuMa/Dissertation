@@ -4,6 +4,8 @@ on:
     branches: ["main"]
     paths:
       - 'Report1/**'
+      - '!Report1/*.pdf'
+      - '!Report1/*.pptx'
   workflow_dispatch:
 
 jobs:
@@ -19,7 +21,7 @@ jobs:
         with:
           working_directory: Report1
           root_file: my-report.tex
-          args: -pdf -interaction=nonstopmode -halt-on-error -file-line-error
+          args: -pdf -synctex=1 -interaction=nonstopmode -file-line-error -recorder
 
       - name: Add Report 1 PDF
         run: |
