@@ -1,0 +1,43 @@
+% vim: set tw=78 sts=2 sw=2 ts=8 aw et ai:
+
+\subsubsection*{What are AI agents?}
+
+An AI agent is an autonomous system that performs tasks by designing and executing workflows 
+with available tools. They overcome the limitations of traditional LLMs by being augmented with
+memory, tool use, and the ability to plan and execute multi-step processes. This allows them to
+handle complex tasks that require reasoning, decision-making, and interaction with external systems
+\cite{what-are-ai-agents}.
+
+The typical AI agent flow consists of the following three components:
+\begin{itemize}
+\item \textbf{Goal initialization \& planning}: Human-defined goals and rules guide the agent to decompose tasks into subtasks and create a plan.
+\item \textbf{Reasoning with tools}: The agent calls external datasets, APIs, or other agents to fill information gaps, then updates its knowledge and refines its plan.
+\item \textbf{Learning \& reflection}: Feedback from humans, other agents, or HITL(Human-in-the-Loop) interactions is stored in memory, enabling iterative improvement and personalization.
+\end{itemize}
+
+\fig[scale=0.50]{img/ai-agents.pdf}{img:AI agents}{AI agents architecture} 
+
+\subsection*{Using agents to minimize applications}
+
+Owing to their above mentioned capabilities, I identified two ways they can be used in my
+project:
+
+\begin{itemize}
+\item \textbf{AI Fuzzing Agent}: An agent that fuzzes the application to trigger state changes in order to identify hidden dependencies
+\item \textbf{AI Testing Agent}: An agent that tests the minimize application to ensure that it runs the same as the original application and that it is free of bugs
+\end{itemize}
+
+For this report, I will focus on the \textit{AI Fuzzing Agent}, leaving the testing one for future work.
+
+As you can recall from the previous report \cite{report1}, my application tries to build the minimal container image in three steps:
+a static analysis using ldd, a dynamic analysis using strace and a brute-force binary search in case the first two failed. In theory,
+the final binary stage is sufficient since, given enough time, it will eventually find the minimal set. However, in practice, it is very resource-intensive
+and the final result is not much smaller than the original one (multiple binary-searches one after the other will asymptotically approach the minimal set).
+
+As such, the best way to improve the performance of the project is to improve the dynamic analysis stage, which is where the AI Fuzzing Agent comes in.
+As the name implies, the agent will act as a fuzzer, an automated testing technique that injects input into a program to trigger state changes \cite{fuzzing}.
+
+\fig[scale=0.50]{img/fuzzing.pdf}{img:Fuzzing flow}{A typical fuzzing flow} 
+
+The goal of the agent is to send input to the application whilst it's being traced by strace, in order to trigger as many state changes to uncover any hidden dependencies that
+the app may need in order to run.
