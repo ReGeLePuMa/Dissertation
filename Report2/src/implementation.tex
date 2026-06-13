@@ -1,0 +1,94 @@
+% vim: set tw=78 sts=2 sw=2 ts=8 aw et ai:
+
+The implementation for the agent is written in Go in order to have a much simpler integration with the
+larger project, which is also written in Go. To facilitate the development of the agent, I used the
+\href{https://docs.cloud.google.com/gemini-enterprise-agent-platform/models/sdks/overview#googlegenaisdk_quickstart-go_genai_sdk}{Google Gen AI SDK}, 
+which provides a simple interface for interacting with their Gemini models. However, I made sure that using any provider's models is a simple plug-and-play operation.
+
+Foremost, I change the cli interface, adding the following flags:
+
+\begin{itemize}
+\item \texttt{--provider} - AI provider to use for analysis (e.g., 'google')
+\item \texttt{--model} - AI model to use for analysis (e.g., 'gemini-3.5-flash')
+\item \texttt{--token} - API token for the AI service
+\end{itemize}
+
+These 3 flags are optional, and if not provided, it will use the standard dynamic analysis as before. 
+
+In order to provide an agnostic interface for the AI models, I create an \textit{Agent} interface with two methods
+
+\lstset{language=Go,caption=Agent interface,label=lst:agent-interface}
+\begin{lstlisting}
+type Agent interface {
+	GenerateAction(ctx context.Context, prompt string) (string, error)
+	RegisterTools(tools []tools.Tool)
+}
+\end{lstlisting}
+
+The \texttt{GenerateAction} method takes a prompt and returns the LLMs reasoning process
+alongside any action it took.
+The \texttt{RegisterTools} method is used to register the tools that the agent can use to perform actions.
+
+In our context, a \textit{tool} is an object that implements the \texttt{Tool}.
+
+\lstset{language=Go,caption=Tool interface,label=lst:tool-interface}
+\begin{lstlisting}
+type Tool struct {
+	Name        string
+	Description string
+	InputSchema map[string]interface{}
+	Execute     func(containerName string, input map[string]interface{}) (string, error)
+}
+\end{lstlisting}
+
+
+It provides a function with how to call it, plus a description and an input schema, which is used by the LLM to understand how to use it.
+For this agent, I have created 3 tools
+
+\begin{itemize}
+   \item \textbf{executeCommand}: Execute a shell command inside the target container and capture stdout/stderr
+   \item \textbf{writeToStdin}: Write raw string payloads directly into the standard input (stdin) of the main running container process
+   \item \textbf{sendRawSocket}: Open a raw network socket (TCP or UDP) to a specific port on the container and transmit arbitrary data bytes.
+\end{itemize}
+
+
+These two interfaces provide our most basic abstractions in order to build our fuzzing agent. Let us see how to use them to integrate the Google Gemini model into our agent.
+
+In order to use any provider, we simply create a new struct that implements the \texttt{Agent} interface. For the Google Gemini model, I created the \texttt{GoogleAIAgent} struct.
+
+\lstset{language=Go,caption=Google Ai Agent,label=lst:google-ai-agent}
+\begin{lstlisting}
+import (
+	"google.golang.org/genai"
+)
+
+type GoogleAIAgent struct {
+	client       *genai.Client
+	model        string
+	systemPrompt string
+	tools        []tools.Tool
+}
+\end{lstlisting}
+
+We then provide a definition for the two methods of the \texttt{Agent} interface and a constructor and we are done.
+A key point to note is that we need to provide the model with a \textbf{system prompt}, which is a string that describes the context in which
+the model is operating, the tools it has at its disposal and how to use them. This is a crucial step in order to have a good performance from the model,
+as it needs to understand the environment and the tools in order to use them effectively 
+\cite{system-prompts}.
+
+To instantiate the agent, we use a \textit{factory} function that takes the provider, model and token and returns the 
+corresponding agent.
+
+\lstset{language=Go,caption=Agent Factory,label=lst:agent-factory}
+\begin{lstlisting}
+var agents = map[string]func(context.Context, string, string) Agent{
+	"google": NewGoogleAIAgent,
+}
+
+func AgentFactory(ctx context.Context, maker string, model string, token string) Agent {
+	if agent, exists := agents[maker]; exists {
+		return agent(ctx, model, token)
+	}
+	return nil
+}
+\end{lstlisting}
