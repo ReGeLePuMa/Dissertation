@@ -1,0 +1,27 @@
+% vim: set tw=78 sts=2 sw=2 ts=8 aw et ai:
+
+\subsection*{Results}
+
+I run my new implementation on the same \href{https://github.com/ReGeLePuMa/testing}{dataset} as
+with the original one and I have found some interesting results.
+
+Broadly speaking, the new dynamic analysis was able to find more dependencies than the standard one,
+but not that many more and only few application benefited from it, mainly the ones that had the source code available
+on the container itself.
+Additionally, the AI was prone to send data to the container that caused it to crash,
+skipping the rest of the analysis and going to the binary search. I altered the system prompt to try to mitigate this
+but it was still an issue. I also found that it was consuming tokens at a much higher rate than I expected, especially when the
+source code was available. Another issue was that I was the AI began hallucinating after a while, sending data that was not relevant to the analysis.
+
+\subsection*{Further Work}
+
+Based on the results I obtained, I think that the most important thing to do is to fix
+the issues I mentioned above, especially fixing the crashes.
+
+For the future, I have some ideas, including:
+
+\begin{itemize}
+    \item \textbf{Support for more models}: I want to add support for more providers, especially OpenAI and Anthropic
+    \item \textbf{More dynamic analysis traces}: I want to add more probes to trace the application, including \textit{ftrace}, \textit{fanotify} etc.
+    \item \textbf{Compose support}: I want to add a wrapper for docker compose, to minimize a whole stack at once, instead of doing it for each image separately.
+\end{itemize}
