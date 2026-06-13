@@ -11,6 +11,14 @@
 \usepackage{float}
 \usepackage{booktabs}     % professional tables
 \usepackage{parskip}
+\usepackage{listings}
+
+\lstset{
+	numbers=left, numberstyle=\footnotesize,
+	frame=lines, captionpos=b,
+	breaklines=true,
+	basicstyle=\ttfamily
+}
 
 \NewDocumentCommand{\fig}{O{} m m m O{0pt}}{
 \begin{figure}[htb]
@@ -56,9 +64,9 @@ National University of Science and Technology POLITEHNICA Bucharest\\
 \input{src/architecture}
 \pagebreak
 
-\section{My Work}
-\label{sec:my-work}
-\input{src/my-work}
+\section{Implementation}
+\label{sec:implementation}
+\input{src/implementation}
 \pagebreak
 
 
