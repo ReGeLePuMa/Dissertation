@@ -1,0 +1,35 @@
+name: Build Report 2
+on:
+  push:
+    branches: ["main"]
+    paths:
+      - 'Report2/**'
+      - '!Report2/*.pdf'
+      - '!Report2/*.pptx'
+  workflow_dispatch:
+
+jobs:
+  build_report_2:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Compile Report 2
+        uses: xu-cheng/latex-action@v4
+        with:
+          working_directory: Report2
+          root_file: my-report.tex
+          args: -pdf -synctex=1 -interaction=nonstopmode -file-line-error -recorder
+
+      - name: Add Report 2 PDF
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+
+          mv Report2/my-report.pdf Report2/'Master - AC - R2 - Report - PETREA Andrei.pdf'
+
+          git add -f 'Report2/Master - AC - R2 - Report - PETREA Andrei.pdf'
+          git commit -m "Update Report 2 PDF" || echo "No changes"
+          git push origin main
