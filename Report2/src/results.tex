@@ -5,21 +5,23 @@
 I run my new implementation on the same \href{https://github.com/ReGeLePuMa/testing}{dataset} as
 with the original one and I have found some interesting results.
 
-Broadly speaking, the new dynamic analysis was able to find more dependencies than the standard one,
-but not that many more and only few application benefited from it, mainly the ones that had the source code available
-on the container itself.
-Additionally, the AI was prone to send data to the container that caused it to crash,
-skipping the rest of the analysis and going to the binary search. I altered the system prompt to try to mitigate this
-but it was still an issue. I also found that it was consuming tokens at a much higher rate than I expected, especially when the
-source code was available. Another issue was that I was the AI began hallucinating after a while, sending data that was not relevant to the analysis.
+While the novel dynamic analysis technique demonstrated measurable improvements
+in dependency detection compared to the traditional baseline, 
+these gains were largely restricted to applications with locally accessible source code.
+Furthermore, the integration of the AI model introduced significant operational limitations.
+Notably, the model frequently generated malformed inputs that induced container crashes, despite
+the attempts to mitigate this issues by modifying the system prompt, which consequently bypassed 
+the primary analysis phase and triggered a fallback to the binary search brute-force. 
+Moreover, the system exhibited an excessively high rate of token consumption, 
+particularly during the evaluation of available source code.
 
 \subsection*{Further Work}
 
-Based on the results I obtained, I think that the most important thing to do is to fix
-the issues I mentioned above, especially fixing the crashes.
+Considering these results, overcoming the above-mentioned deficiencies is going to be 
+the first priority in further stages, especially with regard to eliminating the issue of 
+container crashes.
 
-For the future, I have some ideas, including:
-
+In this sense, areas of interest for further research will involve:
 \begin{itemize}
     \item \textbf{Support for more models}: I want to add support for more providers, especially OpenAI and Anthropic
     \item \textbf{More dynamic analysis traces}: I want to add more probes to trace the application, including \textit{ftrace}, \textit{fanotify} etc.
